@@ -42,9 +42,9 @@ void play();
 int getCodeFromIR();
 int getNumberFromIR();
 void initSeas();
-int getSizeFromCode(int code);
+int8_t getSizeFromCode(int8_t code);
 bool checkIfFit(int x, int y, int orientation, int size);
-void setUpShip(int x, int y, int orientation, int size, int code);
+void setUpShip(int x, int y, int orientation, int size, int8_t code);
 int checkHit(int x, int y);
 bool generateHit(int *x, int *y, int lastHitX, int lastHitY);
 int markAnswerOnMap(int x, int y, int answer);
@@ -64,7 +64,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if (getCodeFromIR() != 64) {
+  if (sparki.readIR() != 64) {
     if (random(2) >= 1) {
       int move = random(5);
       switch(move) {
@@ -296,9 +296,9 @@ void initSeas() {
    * 50 - miss!
    * 30-39 - hit!
    */
-  for (int j = 19; j > 9; j--) {
+  for (int8_t j = 19; j > 9; j--) {
     bool setup = false;
-    int size = getSizeFromCode(j);
+    int8_t size = getSizeFromCode(j);
     while(!setup) {
       int x = random(10), y = random(10), orientation = random(2); // orientation | 0         = horizontal 
                                                                    //             | otherwise = vertical
@@ -311,8 +311,8 @@ void initSeas() {
   return;
 }
 
-int getSizeFromCode(int code) {
-  int size = -1;
+int8_t getSizeFromCode(int8_t code) {
+  int8_t size = -1;
   if (code > 9 && code < 14) {
     size = 1;
   } else if (code < 17) {
@@ -325,7 +325,7 @@ int getSizeFromCode(int code) {
   return size;
 }
 
-bool checkIfFit(int x, int y, int orientation, int size) {
+bool checkIfFit(int x, int y, int orientation, int8_t size) {
   if (x < 0 || x > 9 || y < 0 || y > 9 || (orientation == 0 && (x + size) > 9) || (orientation != 0 && (y + size) > 9)) {
     return false;
   }
@@ -363,7 +363,7 @@ bool checkIfFit(int x, int y, int orientation, int size) {
   return fit;
 }
 
-void setUpShip(int x, int y, int orientation, int size, int code) {
+void setUpShip(int x, int y, int orientation, int size, int8_t code) {
   for (int i = 0; i < size; i++) {
     if (orientation == 0) {
       mySea[x + i][y] = code;
@@ -375,22 +375,22 @@ void setUpShip(int x, int y, int orientation, int size, int code) {
 
 int checkHit(int x, int y) {
   int state = 20; // lets be pessemistic...
-  int code = mySea[x][y];
-  if (code > 9 && code < 20) {
+  int8_t code = mySea[x][y];
+  if (code > 9 && code < 20) { // player hit. need to know if ship sank
     mySea[x][y] = code + 20;
+  } else { // player missed
+    // Sparki should celebrate it.
+    sparki.clearLCD();
+    strBuff = String("Miss!");
+    strBuff.toCharArray(chrBuff, 20);
+    sparki.drawString(0, 0, chrBuff);
+    sparki.updateLCD();
+    delay(2000);
+    return 1;
   }
   for (int i = 0; i < 10; i++){
     for (int j = 0; j < 10; j++) {
-      if (mySea[i][j] < 10 || mySea[i][j] > 19) { // player missed
-        // Sparki should celebrate it.
-        sparki.clearLCD();
-        strBuff = String("Miss!");
-        strBuff.toCharArray(chrBuff, 20);
-        sparki.drawString(0, 0, chrBuff);
-        sparki.updateLCD();
-        delay(2000);
-        return 1;
-      } else if (mySea[i][j] == code) { // player hit
+      if (mySea[i][j] == code) { // player hit, but ship is still alive!
         // Sparki is sad.
         sparki.clearLCD();
         strBuff = String("Hit!");
@@ -404,7 +404,7 @@ int checkHit(int x, int y) {
       }
     }
   }
-  if (state == 0) { // sink..
+  if (state == 0) { // sink.. But Sparki have ship or more!
     // Sparki is sad.
     sparki.clearLCD();
     strBuff = String("Sink!");
@@ -434,8 +434,8 @@ bool generateHit(int *x, int *y, int lastHitX, int lastHitY) {
     }
     if (count > 0 ) {
       int hit = random(count);
-      *x = hit / 10;
-      *y = hit % 10;
+      *x = cells[hit] / 10;
+      *y = cells[hit] % 10;
     } else {
       fail = true;
     }
