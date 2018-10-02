@@ -34,7 +34,7 @@
    *          | hit                  =  2
    *          | near to ship         =  3
    */
-uint8_t mySea[10][10], enemySea[10][10];
+int8_t mySea[10][10], enemySea[10][10];
 String strBuff;
 char chrBuff[20];
 
@@ -48,13 +48,18 @@ void setUpShip(int x, int y, int orientation, int size, int code);
 int checkHit(int x, int y);
 bool generateHit(int *x, int *y, int lastHitX, int lastHitY);
 int markAnswerOnMap(int x, int y, int answer);
-void playMusicAndDance(uint8_t *notes, uint8_t *durations, uint8_t *dance);
+void playMusicAndDance(int8_t *notes, int8_t *durations, int8_t *dance);
 
 void setup() {
   // put your setup code here, to run once:
-  randomSeed(analogRead(0));
+  randomSeed(analogRead(0)*1000);
   sparki.servo(SERVO_CENTER); // center the servo
   sparki.clearLCD();
+  strBuff = String("Ilya let's play!");
+  strBuff.toCharArray(chrBuff, 20);
+  sparki.drawString(0, 0, chrBuff);
+  sparki.updateLCD();
+  sparki.servo(0);
 }
 
 void loop() {
@@ -81,9 +86,9 @@ void loop() {
       }
     }
   } else {
+    sparki.moveStop();
     play();
   }
-  sparki.updateLCD();
   delay(100);
 }
 
@@ -104,60 +109,75 @@ void play() {
     int x = -1, y = -1;
     switch(state) {
       case 0:
-        strBuff = String("Your move:");
-        strBuff.toCharArray(chrBuff, 20);
-        sparki.drawString(0, 0, chrBuff);
-        sparki.updateLCD();
         do {
+          sparki.clearLCD();
+          strBuff = String("Your move:");
+          strBuff.toCharArray(chrBuff, 20);
+          sparki.drawString(0, 0, chrBuff);
+          sparki.updateLCD();
           x = getNumberFromIR();
           strBuff = x;
           strBuff.toCharArray(chrBuff, 20);
           sparki.drawString(0, 1, chrBuff);
           sparki.updateLCD();
           y = getNumberFromIR();
-          strBuff = x;
+          strBuff = y;
           strBuff.toCharArray(chrBuff, 20);
-          sparki.drawString(2, 1, chrBuff);
+          sparki.drawString(20, 1, chrBuff);
           sparki.updateLCD();
+          delay(1000);
           state = checkHit(x,y);
         } while(state == 0);
         break;
       case 1:
         if (generateHit(&x, &y, lastHitX, lastHitY)) {
-          strBuff = String("I'm hitting... ") + x + String(" ") + y;
+          sparki.clearLCD();
+          strBuff = String("My shot: ");
+          strBuff += String(x);
+          strBuff += String(" ");
+          strBuff += String(y);
           strBuff.toCharArray(chrBuff, 20);
           sparki.drawString(0, 0, chrBuff);
           sparki.updateLCD();
-          int code = getCodeFromIR();
-          switch(code) {
-            case 68: // miss
-              state = markAnswerOnMap(x, y, 0);
-              strBuff = String("Oops!");
-              strBuff.toCharArray(chrBuff, 20);
-              sparki.drawString(0, 0, chrBuff);
-              sparki.updateLCD();
-              delay(1000);
-              break;
-            case 64: // hit
-              state = markAnswerOnMap(x, y, 1);
-              lastHitX = x;
-              lastHitY = y;
-              strBuff = String("Wow!");
-              strBuff.toCharArray(chrBuff, 20);
-              sparki.drawString(0, 0, chrBuff);
-              sparki.updateLCD();
-              delay(1000);
-              break;
-            case 67: // sink
-              state = markAnswerOnMap(x, y, 2);
-              lastHitX = -1;
-              lastHitY = -1;
-              strBuff = String("Oh yeah!!!");
-              strBuff.toCharArray(chrBuff, 20);
-              sparki.drawString(0, 0, chrBuff);
-              sparki.updateLCD();
-              delay(1000);
-              break;
+          bool done = false;
+          while(!done) {
+            int code = getCodeFromIR();
+            switch(code) {
+              case 68: // miss
+                state = markAnswerOnMap(x, y, 0);
+                sparki.clearLCD();
+                strBuff = String("Oops!");
+                strBuff.toCharArray(chrBuff, 20);
+                sparki.drawString(0, 0, chrBuff);
+                sparki.updateLCD();
+                delay(1000);
+                done = true;
+                break;
+              case 64: // hit
+                state = markAnswerOnMap(x, y, 1);
+                lastHitX = x;
+                lastHitY = y;
+                sparki.clearLCD();
+                strBuff = String("Wow!");
+                strBuff.toCharArray(chrBuff, 20);
+                sparki.drawString(0, 0, chrBuff);
+                sparki.updateLCD();
+                delay(1000);
+                done = true;
+                break;
+              case 67: // sink
+                state = markAnswerOnMap(x, y, 2);
+                lastHitX = -1;
+                lastHitY = -1;
+                sparki.clearLCD();
+                strBuff = String("Oh yeah!!!");
+                strBuff.toCharArray(chrBuff, 20);
+                sparki.drawString(0, 0, chrBuff);
+                sparki.updateLCD();
+                delay(1000);
+                done = true;
+                break;
+            }
           }
         } else {
           state = 22;
@@ -168,6 +188,7 @@ void play() {
   
   switch(state) {
     case 20:
+      sparki.clearLCD();
       strBuff = String("You win!");
       strBuff.toCharArray(chrBuff, 20);
       sparki.drawString(0, 0, chrBuff);
@@ -175,6 +196,7 @@ void play() {
       delay(3000);
       break;
     case 21:
+      sparki.clearLCD();
       strBuff = String("I win!");
       strBuff.toCharArray(chrBuff, 20);
       sparki.drawString(0, 0, chrBuff);
@@ -182,6 +204,7 @@ void play() {
       delay(3000);
       break;
     case 22:
+      sparki.clearLCD();
       strBuff = String("You're cheating!");
       strBuff.toCharArray(chrBuff, 20);
       sparki.drawString(0, 0, chrBuff);
@@ -189,10 +212,19 @@ void play() {
       delay(3000);
       break;
   }
+  sparki.clearLCD();
+  strBuff = String("Ilya let's play!");
+  strBuff.toCharArray(chrBuff, 20);
+  sparki.drawString(0, 0, chrBuff);
+  sparki.updateLCD();
 }
 
 int getCodeFromIR(){
-  int code = sparki.readIR();
+  int code = -1;
+  while(code == -1) {
+    code = sparki.readIR();
+    delay(100);
+  }
   delay(100);
   while (sparki.readIR() != -1) {
     delay(100);
@@ -201,40 +233,41 @@ int getCodeFromIR(){
 }
 
 int getNumberFromIR() {
-  switch (getNumberFromIR()) {
-    case 25:
-      return 0;
-      break;
-    case 12:
-      return 1;
-      break;
-    case 24:
-      return 2;
-      break;
-    case 94:
-      return 3;
-      break;
-    case 8:
-      return 4;
-      break;
-    case 28:
-      return 5;
-      break;
-    case 90:
-      return 6;
-      break;
-    case 66:
-      return 7;
-      break;
-    case 82:
-      return 8;
-      break;
-    case 74:
-      return 9;
-      break;
-    default:
-      return -1;
-      break;
+  while(true) {
+    switch (getCodeFromIR()) {
+      case 25:
+        return 0;
+        break;
+      case 12:
+        return 1;
+        break;
+      case 24:
+        return 2;
+        break;
+      case 94:
+        return 3;
+        break;
+      case 8:
+        return 4;
+        break;
+      case 28:
+        return 5;
+        break;
+      case 90:
+        return 6;
+        break;
+      case 66:
+        return 7;
+        break;
+      case 82:
+        return 8;
+        break;
+      case 74:
+        return 9;
+        break;
+      default:
+        break;
+    }
   }
   return -1;
 }
@@ -350,6 +383,7 @@ int checkHit(int x, int y) {
     for (int j = 0; j < 10; j++) {
       if (mySea[i][j] < 10 || mySea[i][j] > 19) { // player missed
         // Sparki should celebrate it.
+        sparki.clearLCD();
         strBuff = String("Miss!");
         strBuff.toCharArray(chrBuff, 20);
         sparki.drawString(0, 0, chrBuff);
@@ -358,6 +392,7 @@ int checkHit(int x, int y) {
         return 1;
       } else if (mySea[i][j] == code) { // player hit
         // Sparki is sad.
+        sparki.clearLCD();
         strBuff = String("Hit!");
         strBuff.toCharArray(chrBuff, 20);
         sparki.drawString(0, 0, chrBuff);
@@ -371,6 +406,7 @@ int checkHit(int x, int y) {
   }
   if (state == 0) { // sink..
     // Sparki is sad.
+    sparki.clearLCD();
     strBuff = String("Sink!");
     strBuff.toCharArray(chrBuff, 20);
     sparki.drawString(0, 0, chrBuff);
@@ -387,7 +423,7 @@ int checkHit(int x, int y) {
 bool generateHit(int *x, int *y, int lastHitX, int lastHitY) {
   bool fail = false;
   if (lastHitX < 0 || lastHitY < 0) {
-    uint8_t cells[100], count = 0;
+    int8_t cells[100], count = 0;
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 10; j++) {
         if (enemySea[i][j] == 0) {
@@ -445,7 +481,7 @@ bool generateHit(int *x, int *y, int lastHitX, int lastHitY) {
           case 2:
             *x = lastHitX;
             *y = lastHitY - k;
-            if (y >= 0) {
+            if (*y >= 0) {
               if (enemySea[*x][*y] == 0) {
                 done = true;
               } else if (enemySea[*x][*y] == 2) {
@@ -477,7 +513,7 @@ bool generateHit(int *x, int *y, int lastHitX, int lastHitY) {
       fail = true;
     }
   }
-  return fail;
+  return !fail;
 }
 
 /****
@@ -507,7 +543,7 @@ int markAnswerOnMap(int x, int y, int answer){
         state = 22;
       }
       break;
-    case 3:
+    case 2:
       enemySea[x][y] = 2;
       state = 1;
       for (int i = 0; i < 10; i++){
@@ -558,7 +594,7 @@ int markAnswerOnMap(int x, int y, int answer){
   return state;
 }
 
-void playMusicAndDance(uint8_t *notes, uint8_t *durations, uint8_t *dance){
+void playMusicAndDance(int8_t *notes, int8_t *durations, int8_t *dance){
   return;
 }
 
