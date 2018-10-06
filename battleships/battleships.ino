@@ -1,4 +1,17 @@
-#include "mySparki.h"  // include the robot library. It's mmodified to use less memory
+/*******
+ * 
+ * Author: Dima Kurilo (dkurilo@gmail.com)
+ * 
+ * This program intentionally as simple as it possible. Because it for my son.
+ * If you want classes and other things, check it 3-4 years later.
+ * My son will be able to understand more complex things and we will make this game's code more modern.
+ * Maybe 6-8 years later you find Haskell implementation here. But it will not be for Arduino.
+ * 
+ ******/
+
+#define MYDEBUG
+
+#include "sparki.h"
 #include <math.h>
 #include "pitches.h"
 
@@ -34,13 +47,25 @@
    *          | hit                  =  2
    *          | near to ship         =  3
    */
-int8_t mySea[10][10], enemySea[10][10];
+
+/*
+ * we need more dynamic memory. It's only one reason why we have one sea
+ * Each cell:
+ * 00     000000
+ * enemy  Sparki's
+ * Check: getMySea, setMySea and getEnemySea, setEnemySea functions
+ */
+int8_t sea[10][10];
 String strBuff;
 char chrBuff[20];
 
 void play();
 int getCodeFromIR();
 int getNumberFromIR();
+int8_t getMySea(int x, int y);
+int8_t getEnemySea(int x, int y);
+void setMySea(int x, int y, int8_t code);
+void setEnemySea(int x, int y, int8_t code);
 void initSeas();
 int8_t getSizeFromCode(int8_t code);
 bool checkIfFit(int x, int y, int orientation, int size);
@@ -60,6 +85,7 @@ void setup() {
   sparki.drawString(0, 0, chrBuff);
   sparki.updateLCD();
   sparki.servo(0);
+  Serial1.begin(9600);
 }
 
 void loop() {
@@ -275,8 +301,7 @@ int getNumberFromIR() {
 void initSeas() {
   for(int i = 0; i < 10; i++) {
     for(int k = 0; k < 10; k++) {
-      mySea[i][k] = 0;
-      enemySea[i][k] = 0;
+      sea[i][k] = 0;
     }
   }
   /***
@@ -347,7 +372,7 @@ bool checkIfFit(int x, int y, int orientation, int8_t size) {
         if (currentY < 0 || currentY > 9) {
           break;
         }
-        if (mySea[currentX][currentY] != 0) {
+        if (getMySea(currentX, currentY) != 0) {
           fit = false;
           break;
         }
@@ -366,18 +391,18 @@ bool checkIfFit(int x, int y, int orientation, int8_t size) {
 void setUpShip(int x, int y, int orientation, int size, int8_t code) {
   for (int i = 0; i < size; i++) {
     if (orientation == 0) {
-      mySea[x + i][y] = code;
+      setMySea(x + i, y, code);
     } else {
-      mySea[x][y + i] = code;
+      setMySea(x, y + i, code);
     }
   }
 }
 
 int checkHit(int x, int y) {
   int state = 20; // lets be pessemistic...
-  int8_t code = mySea[x][y];
+  int8_t code = getMySea(x, y);
   if (code > 9 && code < 20) { // player hit. need to know if ship sank
-    mySea[x][y] = code + 20;
+    setMySea(x, y, code + 20);
   } else { // player missed
     // Sparki should celebrate it.
     sparki.clearLCD();
@@ -390,7 +415,7 @@ int checkHit(int x, int y) {
   }
   for (int i = 0; i < 10; i++){
     for (int j = 0; j < 10; j++) {
-      if (mySea[i][j] == code) { // player hit, but ship is still alive!
+      if (getMySea(i, j) == code) { // player hit, but ship is still alive!
         // Sparki is sad.
         sparki.clearLCD();
         strBuff = String("Hit!");
@@ -399,7 +424,7 @@ int checkHit(int x, int y) {
         sparki.updateLCD();
         delay(2000);
         return 0;
-      } else if (mySea[i][j] > 9 && mySea[i][j] < 20) { // hit, but we have more ships!
+      } else if (getMySea(i, j) > 9 && getMySea(i, j) < 20) { // hit, but we have more ships!
         state = 0;
       }
     }
@@ -426,7 +451,7 @@ bool generateHit(int *x, int *y, int lastHitX, int lastHitY) {
     int8_t cells[100], count = 0;
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 10; j++) {
-        if (enemySea[i][j] == 0) {
+        if (getEnemySea(i, j) == 0) {
           cells[count] = i * 10 + j;
           count++;
         }
@@ -441,10 +466,10 @@ bool generateHit(int *x, int *y, int lastHitX, int lastHitY) {
     }
   } else {
     int direction = random(4), orientation = -1, decks = 0;
-    if ((lastHitX > 0 && enemySea[lastHitX - 1][lastHitY] == 2) || (lastHitX < 9 && enemySea[lastHitX + 1][lastHitY] == 2)) {
+    if ((lastHitX > 0 && getEnemySea(lastHitX - 1, lastHitY) == 2) || (lastHitX < 9 && getEnemySea(lastHitX + 1, lastHitY) == 2)) {
       orientation = 0;
       direction = 0;
-    } else if ((lastHitY > 0 && enemySea[lastHitX][lastHitY - 1] == 2) || (lastHitY < 9 && enemySea[lastHitX][lastHitY + 1] == 2)) {
+    } else if ((lastHitY > 0 && getEnemySea(lastHitX, lastHitY - 1) == 2) || (lastHitY < 9 && getEnemySea(lastHitX, lastHitY + 1) == 2)) {
       orientation = 1;
       direction = 2;
     }
@@ -456,9 +481,9 @@ bool generateHit(int *x, int *y, int lastHitX, int lastHitY) {
             *x = lastHitX - k;
             *y = lastHitY;
             if (*x >= 0) {
-              if (enemySea[*x][*y] == 0) {
+              if (getEnemySea(*x, *y) == 0) {
                 done = true;
-              } else if (enemySea[*x][*y] == 2) {
+              } else if (getEnemySea(*x, *y) == 2) {
                 if (orientation == -1 || orientation == 0) {
                   decks++;
                 }
@@ -469,9 +494,9 @@ bool generateHit(int *x, int *y, int lastHitX, int lastHitY) {
             *x = lastHitX + k;
             *y = lastHitY;
             if (*x < 10) {
-              if (enemySea[*x][*y] == 0) {
+              if (getEnemySea(*x, *y) == 0) {
                 done = true;
-              } else if (enemySea[*x][*y] == 2) {
+              } else if (getEnemySea(*x, *y) == 2) {
                 if (orientation == -1 || orientation == 0) {
                   decks++;
                 }
@@ -482,9 +507,9 @@ bool generateHit(int *x, int *y, int lastHitX, int lastHitY) {
             *x = lastHitX;
             *y = lastHitY - k;
             if (*y >= 0) {
-              if (enemySea[*x][*y] == 0) {
+              if (getEnemySea(*x, *y) == 0) {
                 done = true;
-              } else if (enemySea[*x][*y] == 2) {
+              } else if (getEnemySea(*x, *y) == 2) {
                 if (orientation == -1 || orientation == 1) {
                   decks++;
                 }
@@ -496,9 +521,9 @@ bool generateHit(int *x, int *y, int lastHitX, int lastHitY) {
             *x = lastHitX;
             *y = lastHitY + k;
             if (*y < 10) {
-              if (enemySea[*x][*y] == 0) {
+              if (getEnemySea(*x, *y) == 0) {
                 done = true;
-              } else if (enemySea[*x][*y] == 2) {
+              } else if (getEnemySea(*x, *y) == 2) {
                 if (orientation == -1 || orientation == 1) {
                   decks++;
                 }
@@ -526,15 +551,15 @@ int markAnswerOnMap(int x, int y, int answer){
   int count = 0;
   switch (answer) {
     case 0:
-      enemySea[x][y] = 1;
+      setEnemySea(x, y, 1);
       state = 0;
       break;
     case 1:
-      enemySea[x][y] = 2;
+      setEnemySea(x, y, 2);
       state = 1;
       for (int i = 0; i < 10; i++){
         for (int j = 0; j < 10; j++) {
-          if (enemySea[i][j] == 2) {
+          if (getEnemySea(i, j) == 2) {
             count++;
           }
         }
@@ -544,11 +569,11 @@ int markAnswerOnMap(int x, int y, int answer){
       }
       break;
     case 2:
-      enemySea[x][y] = 2;
+      setEnemySea(x, y, 2);
       state = 1;
       for (int i = 0; i < 10; i++){
         for (int j = 0; j < 10; j++) {
-          if (enemySea[i][j] == 2) {
+          if (getEnemySea(i, j) == 2) {
             count++;
           }
         }
@@ -559,7 +584,7 @@ int markAnswerOnMap(int x, int y, int answer){
         state = 22;
       } else {
         int orientation = 0;
-        if ((y > 0 && enemySea[x][y - 1] == 2) || (y < 0 && enemySea[x][y + 1] == 2)) {
+        if ((y > 0 && getEnemySea(x, y - 1) == 2) || (y < 0 && getEnemySea(x, y + 1) == 2)) {
           orientation = 1;
         }
         for (int i = -3; i < 4; i++) {
@@ -570,14 +595,14 @@ int markAnswerOnMap(int x, int y, int answer){
             y1 += i;
           }
           if (x1 >= 0 && x1 < 10 && y1 >= 0 && y1 < 10) {
-            if (enemySea[x1][y1] == 2) {
+            if (getEnemySea(x1, y1) == 2) {
               for (int j = -1; j < 2; j++){
                 int x2 = x1 + j;
                 if (x2 >= 0 && x2 < 10) {
                   for (int k = -1; k < 2; k++){
                     int y2 = y1 + k;
-                    if (y2 >= 0 && y2 < 10 && enemySea[x2][y2] == 0) {
-                      enemySea[x2][y2] = 3;
+                    if (y2 >= 0 && y2 < 10 && getEnemySea(x2, y2) == 0) {
+                      setEnemySea(x2, y2, 3);
                     }
                   }
                 }
@@ -591,7 +616,44 @@ int markAnswerOnMap(int x, int y, int answer){
       state = 22;
       break;
   }
+
+  #ifdef MYDEBUG
+  if (Serial1.available()) {
+    Serial1.print("Coords: ");
+    Serial1.print(x);
+    Serial1.print(" ");
+    Serial1.println(y);
+    Serial1.print("Answer: ");
+    Serial1.println(answer);
+    Serial1.println("Enemy sea: ");
+    for(int i = 0; i < 10; i++){
+      for (int j = 0; j < 10; j++) {
+        Serial1.print(getEnemySea(i, j));
+        Serial1.print(" ");
+      }
+      Serial1.println(" ");
+    }
+    Serial1.println(" ");
+  }
+  #endif
+  
   return state;
+}
+
+int8_t getMySea(int x, int y){
+  return (int8_t) sea[x][y] & 63; // 0b00111111
+}
+
+int8_t getEnemySea(int x, int y){
+  return (int8_t) sea[x][y] >> 6; // (0-3)
+}
+
+void setMySea(int x, int y, int8_t code){
+  sea[x][y] = getEnemySea(x, y) << 6 + code;
+}
+
+void setEnemySea(int x, int y, int8_t code){
+  sea[x][y] = code << 6 + getMySea(x, y);
 }
 
 void playMusicAndDance(int8_t *notes, int8_t *durations, int8_t *dance){
