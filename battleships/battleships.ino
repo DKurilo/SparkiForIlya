@@ -16,6 +16,40 @@
 #include <math.h>
 #include "pitches.h"
 
+// music
+const PROGMEM uint16_t melodies[8 * 18] = {
+  NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  NOTE_D4, 0, NOTE_F4, NOTE_D4, 0, NOTE_D4, NOTE_G4, NOTE_D4, NOTE_C4, NOTE_D4, 0, NOTE_A4, NOTE_D4, 0, NOTE_D4, NOTE_AS4, 0,0,
+  NOTE_A4, NOTE_F4, NOTE_D4, NOTE_A4, NOTE_D5, NOTE_D4, NOTE_C4, 0, NOTE_C4, NOTE_A3, NOTE_E4, NOTE_D4, 0, 0, 0, 0, 0, 0,
+  NOTE_A4, NOTE_A4, NOTE_A4, NOTE_F4, NOTE_C5, NOTE_A4, NOTE_F4, NOTE_C5, NOTE_A4, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_F5, NOTE_C5, NOTE_GS4, NOTE_F4, NOTE_C5, NOTE_A4,
+  NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  NOTE_D4, 0, NOTE_F4, NOTE_D4, 0, NOTE_D4, NOTE_G4, NOTE_D4, NOTE_C4, NOTE_D4, 0, NOTE_A4, NOTE_D4, 0, NOTE_D4, NOTE_AS4, 0,0,
+  NOTE_A4, NOTE_F4, NOTE_D4, NOTE_A4, NOTE_D5, NOTE_D4, NOTE_C4, 0, NOTE_C4, NOTE_A3, NOTE_E4, NOTE_D4, 0, 0, 0, 0, 0, 0,
+  NOTE_A4, NOTE_A4, NOTE_A4, NOTE_F4, NOTE_C5, NOTE_A4, NOTE_F4, NOTE_C5, NOTE_A4, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_F5, NOTE_C5, NOTE_GS4, NOTE_F4, NOTE_C5, NOTE_A4
+};
+const PROGMEM uint8_t noteDurations[8 * 18] = {
+  4, 8, 8, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  8, 8, 6, 16, 16, 16, 8, 8, 8, 8, 8, 6, 16, 16, 16, 8, 0, 0,
+  8, 8, 8, 8, 8, 16, 16, 16, 16, 8, 8, 2, 2, 0, 0, 0, 0, 0,
+  4, 4, 4, 8, 8, 4, 8, 8, 2, 4, 4, 4, 8, 8, 4, 8, 8, 2,
+  4, 8, 8, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  8, 8, 6, 16, 16, 16, 8, 8, 8, 8, 8, 6, 16, 16, 16, 8, 0, 0,
+  8, 8, 8, 8, 8, 16, 16, 16, 16, 8, 8, 2, 2, 0, 0, 0, 0, 0,
+  4, 4, 4, 8, 8, 4, 8, 8, 2, 4, 4, 4, 8, 8, 4, 8, 8, 2
+};
+const PROGMEM uint8_t dances[8 * 18] = {
+  0, 1, 2, 3, 4, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 1, 2, 3, 4, 2, 1, 3, 2, 1, 1, 4, 4, 2, 2, 1, 0, 0,
+  0, 1, 2, 3, 4, 2, 1, 4, 4, 3, 0, 2, 2, 3, 2, 1, 0, 0,
+  0, 1, 2, 3, 4, 2, 1, 4, 4, 3, 0, 2, 2, 3, 2, 1, 2, 3,
+  0, 1, 2, 3, 4, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 1, 2, 3, 4, 2, 1, 3, 2, 1, 1, 4, 4, 2, 2, 1, 0, 0,
+  0, 1, 2, 3, 4, 2, 1, 4, 4, 3, 0, 2, 2, 3, 2, 1, 0, 0,
+  0, 1, 2, 3, 4, 2, 1, 4, 4, 3, 0, 2, 2, 3, 2, 1, 2, 3
+};
+
+const PROGMEM uint8_t sizes[] = {16, 16, 14, 18, 16, 16, 14, 18};
+
 // /------^-----\
 // |            |
 // | 69  70  71 |
@@ -74,7 +108,7 @@ void setUpShip(int x, int y, int orientation, int size, uint8_t code);
 int checkHit(int x, int y);
 bool generateHit(int *x, int *y, int lastHitX, int lastHitY);
 int markAnswerOnMap(int x, int y, int answer);
-void playMusicAndDance(uint8_t *notes, uint8_t *durations, uint8_t *dance);
+void playMusicAndDance(int number);
 
 void setup() {
   // put your setup code here, to run once:
@@ -98,7 +132,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   if (sparki.readIR() != 64) {
     if (random(2) >= 1) {
-      int move = random(5);
+      int move = random(6);
       switch(move) {
         case 0:
           sparki.moveLeft();
@@ -115,6 +149,10 @@ void loop() {
         case 4:
           sparki.moveStop();
           break;
+        case 5:
+          int musicNumb = random(8);
+          playMusicAndDance(musicNumb);
+        break;
       }
     }
   } else {
@@ -676,7 +714,41 @@ void setEnemySea(int x, int y, uint8_t code){
   sea[x][y] = (code << 6) + getMySea(x, y);
 }
 
-void playMusicAndDance(uint8_t *notes, uint8_t *durations, uint8_t *dance){
+void playMusicAndDance(int number){
+  uint8_t size = (uint8_t) pgm_read_byte_near(sizes + number);
+  // play each note in the arrays
+  for (uint8_t i = 0; i < size; i++) {
+    // calculate the note duration as 1 second divided by note type.
+    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+    uint8_t parts = (uint8_t) pgm_read_byte_near(noteDurations + number * 18 + i);
+    int duration = 1000 / (parts==0 ? 32 : parts);
+    sparki.beep((uint16_t)pgm_read_word_near(melodies + number * 18 + i), duration);
+ 
+    // to distinguish the notes, set a minimum time between them.
+    // the note's duration + 30% seems to work well:
+    int pauseBetweenNotes = duration * 1.30;
+    switch((uint8_t) pgm_read_byte_near(dances + number * 18 + i)) {
+      case 0:
+        sparki.moveStop();
+        break;
+      case 1:
+        sparki.moveForward();
+        break;
+      case 2:
+        sparki.moveBackward();
+        break;
+      case 3:
+        sparki.moveRight();
+        break;
+      case 4:
+        sparki.moveLeft();
+        break;
+    }
+    delay(pauseBetweenNotes);
+    // stop the tone playing:
+    sparki.noBeep();
+  }
+  sparki.moveStop();
   return;
 }
 
