@@ -17,38 +17,59 @@
 #include "pitches.h"
 
 // music
-const PROGMEM uint16_t melodies[8 * 18] = {
-  NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  NOTE_D4, 0, NOTE_F4, NOTE_D4, 0, NOTE_D4, NOTE_G4, NOTE_D4, NOTE_C4, NOTE_D4, 0, NOTE_A4, NOTE_D4, 0, NOTE_D4, NOTE_AS4, 0,0,
-  NOTE_A4, NOTE_F4, NOTE_D4, NOTE_A4, NOTE_D5, NOTE_D4, NOTE_C4, 0, NOTE_C4, NOTE_A3, NOTE_E4, NOTE_D4, 0, 0, 0, 0, 0, 0,
-  NOTE_A4, NOTE_A4, NOTE_A4, NOTE_F4, NOTE_C5, NOTE_A4, NOTE_F4, NOTE_C5, NOTE_A4, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_F5, NOTE_C5, NOTE_GS4, NOTE_F4, NOTE_C5, NOTE_A4,
-  NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  NOTE_D4, 0, NOTE_F4, NOTE_D4, 0, NOTE_D4, NOTE_G4, NOTE_D4, NOTE_C4, NOTE_D4, 0, NOTE_A4, NOTE_D4, 0, NOTE_D4, NOTE_AS4, 0,0,
-  NOTE_A4, NOTE_F4, NOTE_D4, NOTE_A4, NOTE_D5, NOTE_D4, NOTE_C4, 0, NOTE_C4, NOTE_A3, NOTE_E4, NOTE_D4, 0, 0, 0, 0, 0, 0,
-  NOTE_A4, NOTE_A4, NOTE_A4, NOTE_F4, NOTE_C5, NOTE_A4, NOTE_F4, NOTE_C5, NOTE_A4, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_F5, NOTE_C5, NOTE_GS4, NOTE_F4, NOTE_C5, NOTE_A4
+const PROGMEM uint16_t melodies[] = {
+  NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3,       0, NOTE_B3, NOTE_C4,       0,       0,       0,       0,       0,       0,       0,       0,      0,        0,   //  0 - Player is cheating!
+  NOTE_E5, NOTE_D5, NOTE_C5, NOTE_A4,       0, NOTE_E5, NOTE_D5, NOTE_C5, NOTE_D5,       0,       0,       0,       0,       0,       0,       0,      0,        0,   //  1 - Player's ship sank 
+  NOTE_E4, NOTE_D4, NOTE_C4, NOTE_A3,       0, NOTE_E4, NOTE_D4, NOTE_C4, NOTE_D4,       0,       0,       0,       0,       0,       0,       0,      0,        0,   //  2 - Spaki's ship sank
+  NOTE_A4, NOTE_A4, NOTE_A4, NOTE_F4, NOTE_C5, NOTE_A4, NOTE_F4, NOTE_C5, NOTE_A4, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_F5, NOTE_C5,NOTE_GS4, NOTE_F4, NOTE_C5, NOTE_A4,   //  3 - Neutral, start of game
+  NOTE_C4, NOTE_D4, NOTE_E4, NOTE_D4, NOTE_C4, NOTE_E4, NOTE_D4, NOTE_C4, NOTE_C4, NOTE_D4, NOTE_E4, NOTE_D4, NOTE_C4, NOTE_E4, NOTE_E4, NOTE_D4, NOTE_C4, NOTE_F4,   //  4 - Sparki lose
+  NOTE_G4, NOTE_G4, NOTE_A4, NOTE_A4, NOTE_F4, NOTE_A4, NOTE_G4, NOTE_G4, NOTE_F4, NOTE_F4, NOTE_G4, NOTE_A4, NOTE_G4, NOTE_F4, NOTE_A4, NOTE_A4, NOTE_G4, NOTE_F4,   //  4 - Sparki lose (continue)
+  NOTE_D5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_D5, NOTE_E5, NOTE_D5,   //  6 - Sparki won
+  NOTE_E5, NOTE_A5, NOTE_G5, NOTE_G5, NOTE_D5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_D5, NOTE_E5, NOTE_D5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_D5, NOTE_D5, NOTE_D5, NOTE_D5,   //  6 - Sparki won (continue)
+  NOTE_B4, NOTE_A4, NOTE_G4, NOTE_E4, NOTE_E4, NOTE_B4, NOTE_D5, NOTE_G5,NOTE_FS5, NOTE_E5, NOTE_D5, NOTE_E5, NOTE_E5,       0, NOTE_G5,NOTE_FS5, NOTE_E5, NOTE_D5,   //  6 - Sparki won (continue)
+  NOTE_E5, NOTE_E5,       0,       0,       0,       0,       0,       0,       0,       0,       0,       0,       0,       0,       0,       0,       0,       0,   //  6 - Sparki won (continue)
+  NOTE_D5,NOTE_DS5, NOTE_D5,NOTE_DS5, NOTE_D5, NOTE_C5,       0,       0,       0,       0,       0,       0,       0,       0,       0,       0,       0,       0,   // 10 - Sparki hit, player missed
+  NOTE_G4, NOTE_G4, NOTE_G4, NOTE_E4,       0, NOTE_F4, NOTE_F4, NOTE_F4, NOTE_D4,       0,       0,       0,       0,       0,       0,       0,       0,       0    // 11 - Sparki missed, player hit
 };
-const PROGMEM uint8_t noteDurations[8 * 18] = {
+const PROGMEM uint8_t noteDurations[] = {
   4, 8, 8, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  8, 8, 6, 16, 16, 16, 8, 8, 8, 8, 8, 6, 16, 16, 16, 8, 0, 0,
-  8, 8, 8, 8, 8, 16, 16, 16, 16, 8, 8, 2, 2, 0, 0, 0, 0, 0,
+  8, 8, 4, 2, 2, 8, 8, 4, 2, 4, 2, 2, 0, 0, 0, 0, 0, 0,
+  4, 4, 2, 1, 1, 4, 4, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   4, 4, 4, 8, 8, 4, 8, 8, 2, 4, 4, 4, 8, 8, 4, 8, 8, 2,
-  4, 8, 8, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  8, 8, 6, 16, 16, 16, 8, 8, 8, 8, 8, 6, 16, 16, 16, 8, 0, 0,
-  8, 8, 8, 8, 8, 16, 16, 16, 16, 8, 8, 2, 2, 0, 0, 0, 0, 0,
-  4, 4, 4, 8, 8, 4, 8, 8, 2, 4, 4, 4, 8, 8, 4, 8, 8, 2
+  4, 4, 4, 8, 8, 4, 4, 2, 4, 4, 4, 8, 8, 8, 4, 8, 2, 4,
+  8, 8, 8, 4, 8, 4, 8, 8, 2, 4, 4, 4, 8, 8, 8, 4, 8, 3,
+  8, 8, 8, 8, 4, 8, 8, 4, 4, 8, 8, 8, 8, 4, 8, 8, 8, 8,
+  4, 4, 4, 8, 8, 4, 4, 8, 8, 4, 4, 4, 4, 2, 8, 8, 4, 4,
+  4, 8, 8, 4, 4, 8, 8, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2,
+  4, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  4, 4, 8, 8, 8, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  8, 8, 8, 2, 2, 8, 8, 8, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
-const PROGMEM uint8_t dances[8 * 18] = {
-  0, 1, 2, 3, 4, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 1, 2, 3, 4, 2, 1, 3, 2, 1, 1, 4, 4, 2, 2, 1, 0, 0,
+
+/*
+ * 0 - stop
+ * 1 - forward
+ * 2 - backward
+ * 3 - right
+ * 4 - left
+ */
+const PROGMEM uint8_t dances[] = {
+  0, 0, 3, 3, 4, 4, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  1, 1, 2, 3, 4, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  1, 1, 1, 1, 1, 1, 0, 0, 0, 2, 2, 2, 2, 2, 2, 3, 4, 0,
+  2, 2, 3, 4, 3, 4, 3, 4, 2, 2, 3, 3, 4, 4, 3, 3, 3, 4,
+  4, 4, 1, 1, 1, 1, 4, 3, 4, 3, 2, 2, 2, 1, 1, 1, 2, 3,
+  0, 1, 2, 3, 4, 2, 1, 4, 4, 3, 0, 2, 2, 3, 2, 1, 2, 3,
+  0, 1, 2, 3, 4, 2, 1, 4, 4, 3, 0, 2, 2, 3, 2, 1, 2, 3,
+  0, 1, 2, 3, 4, 2, 1, 4, 4, 3, 0, 2, 2, 3, 2, 1, 2, 3,
+  0, 1, 2, 3, 4, 2, 1, 4, 4, 3, 0, 2, 2, 3, 2, 1, 2, 3,
   0, 1, 2, 3, 4, 2, 1, 4, 4, 3, 0, 2, 2, 3, 2, 1, 0, 0,
   0, 1, 2, 3, 4, 2, 1, 4, 4, 3, 0, 2, 2, 3, 2, 1, 2, 3,
-  0, 1, 2, 3, 4, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 1, 2, 3, 4, 2, 1, 3, 2, 1, 1, 4, 4, 2, 2, 1, 0, 0,
-  0, 1, 2, 3, 4, 2, 1, 4, 4, 3, 0, 2, 2, 3, 2, 1, 0, 0,
   0, 1, 2, 3, 4, 2, 1, 4, 4, 3, 0, 2, 2, 3, 2, 1, 2, 3
 };
 
-const PROGMEM uint8_t sizes[] = {16, 16, 14, 18, 16, 16, 14, 18};
+const PROGMEM uint8_t sizes[] = {8, 9, 9, 18, 36, 0, 56, 0, 0, 0, 6, 9};
 
 // /------^-----\
 // |            |
@@ -132,7 +153,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   if (sparki.readIR() != 64) {
     if (random(2) >= 1) {
-      int move = random(6);
+      int move = random(5);
       switch(move) {
         case 0:
           sparki.moveLeft();
@@ -149,10 +170,6 @@ void loop() {
         case 4:
           sparki.moveStop();
           break;
-        case 5:
-          int musicNumb = random(8);
-          playMusicAndDance(musicNumb);
-        break;
       }
     }
   } else {
@@ -163,6 +180,7 @@ void loop() {
 }
 
 void play() {
+  playMusicAndDance(3);
   initSeas();
   /************
    * state:
@@ -236,7 +254,8 @@ void play() {
                 strBuff.toCharArray(chrBuff, 20);
                 sparki.drawString(0, 0, chrBuff);
                 sparki.updateLCD();
-                delay(1000);
+                playMusicAndDance(11);
+                delay(500);
                 done = true;
                 break;
               case 64: // hit
@@ -248,7 +267,8 @@ void play() {
                 strBuff.toCharArray(chrBuff, 20);
                 sparki.drawString(0, 0, chrBuff);
                 sparki.updateLCD();
-                delay(1000);
+                playMusicAndDance(10);
+                delay(800);
                 done = true;
                 break;
               case 67: // sink
@@ -260,6 +280,7 @@ void play() {
                 strBuff.toCharArray(chrBuff, 20);
                 sparki.drawString(0, 0, chrBuff);
                 sparki.updateLCD();
+                playMusicAndDance(1);
                 delay(1000);
                 done = true;
                 break;
@@ -279,7 +300,8 @@ void play() {
       strBuff.toCharArray(chrBuff, 20);
       sparki.drawString(0, 0, chrBuff);
       sparki.updateLCD();
-      delay(3000);
+      playMusicAndDance(4);
+      delay(1000);
       break;
     case 21:
       sparki.clearLCD();
@@ -287,7 +309,8 @@ void play() {
       strBuff.toCharArray(chrBuff, 20);
       sparki.drawString(0, 0, chrBuff);
       sparki.updateLCD();
-      delay(3000);
+      playMusicAndDance(6);
+      delay(1000);
       break;
     case 22:
       sparki.clearLCD();
@@ -295,7 +318,8 @@ void play() {
       strBuff.toCharArray(chrBuff, 20);
       sparki.drawString(0, 0, chrBuff);
       sparki.updateLCD();
-      delay(3000);
+      playMusicAndDance(0);
+      delay(2000);
       break;
   }
   sparki.clearLCD();
@@ -471,7 +495,8 @@ int checkHit(int x, int y) {
     strBuff.toCharArray(chrBuff, 20);
     sparki.drawString(0, 0, chrBuff);
     sparki.updateLCD();
-    delay(2000);
+    playMusicAndDance(10);
+    delay(1000);
     return 1;
   }
   for (int i = 0; i < 10; i++){
@@ -483,7 +508,8 @@ int checkHit(int x, int y) {
         strBuff.toCharArray(chrBuff, 20);
         sparki.drawString(0, 0, chrBuff);
         sparki.updateLCD();
-        delay(2000);
+        playMusicAndDance(11);
+        delay(1000);
         return 0;
       } else if (getMySea(i, j) > 9 && getMySea(i, j) < 20) { // hit, but we have more ships!
         state = 0;
@@ -497,6 +523,7 @@ int checkHit(int x, int y) {
     strBuff.toCharArray(chrBuff, 20);
     sparki.drawString(0, 0, chrBuff);
     sparki.updateLCD();
+    playMusicAndDance(2);
     delay(2000);
   }
   return state;
@@ -726,7 +753,7 @@ void playMusicAndDance(int number){
  
     // to distinguish the notes, set a minimum time between them.
     // the note's duration + 30% seems to work well:
-    int pauseBetweenNotes = duration * 1.30;
+    int pauseBetweenNotes = duration + 100;
     switch((uint8_t) pgm_read_byte_near(dances + number * 18 + i)) {
       case 0:
         sparki.moveStop();
