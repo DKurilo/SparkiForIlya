@@ -13,7 +13,7 @@ etc.
 After you push number it will draw beautiful star for you!  
 To exit draw stars mode push `-` button.
 
-## Battleship (Looks like Sparki can play, but I didn't test it yet)
+## Battleship
 On start Sparki wil make random movements. But when you click `stop` button Sparki is ready to play Battleship (https://en.wikipedia.org/wiki/Battleship_(game))!  
 It uses Star Wars version of this game, so:  
 ```

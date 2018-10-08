@@ -220,12 +220,12 @@ void play() {
           sparki.drawString(0, 0, chrBuff);
           sparki.updateLCD();
           x = getNumberFromIR();
-          strBuff = x;
+          strBuff = String(x);
           strBuff.toCharArray(chrBuff, 20);
           sparki.drawString(0, 1, chrBuff);
           sparki.updateLCD();
           y = getNumberFromIR();
-          strBuff = y;
+          strBuff = String(y);
           strBuff.toCharArray(chrBuff, 20);
           sparki.drawString(20, 1, chrBuff);
           sparki.updateLCD();
