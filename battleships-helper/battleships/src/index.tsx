@@ -2,7 +2,11 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as Types from './types';
 
-import Battleships from './Battleships';
+import { EnemySea } from './EnemySea';
+import { Footer } from './Footer';
+import { MySea } from './MySea';
+import { Settings } from './Settings';
+
 import './index.css';
 import registerServiceWorker from './registerServiceWorker';
 
@@ -22,42 +26,75 @@ const Comp: (g:Types.Component) => Types.Box = g => ({
 const initSea: (x: number, y: number) => Types.Sea = (x, y) => Array(y).fill(Array(x).fill('empty'));
 
 const init: (x: number, y: number) => Types.Game = (x, y) => ({
+  enemy: 'sparki',
   enemySea: initSea(x, y),
   mode: 'config',
   mySea: initSea(x, y),
 });
 
-const clickMySea: ((x: number, y: number, g: Types.Game) => void) = (x, y, g) => {
+const clickMySea: (g:Types.Game) => (x: number, y: number) => void = g => (x, y) => {
   console.log(x, y);
+  g.mySea[x][y] = 'ship';
+  render(g);
+};
+
+const clickEnemySea: (g:Types.Game) => (x: number, y: number, g: Types.Game) => void = g => (x, y) => {
+  console.log(x, y);
+  g.enemySea[x][y] = 'hit';
+  render(g);
+};
+
+const config: (g: Types.Game) => () => void = g => () => {
+  g.mode = 'config';
+  render(g);
+};
+
+const toggleEnemy: (g: Types.Game) => () => void = g => () => {
+  g.enemy = g.enemy === 'sparki' ? 'human' : 'sparki';
+  render(g);
+};
+
+const play: (g: Types.Game) => () => void = g => () => {
   g.mode = 'play';
   render(g);
 };
 
-// const clickEnemySea: ((x: number, y: number, g: Types.Game) => void) = (x, y, g) => {
-//   console.log(x, y);
-//   g.mode = 'play';
-//   render(g);
-// };
+const reset: () => void = () => {
+  render(init(10, 10));
+};
 
-// const config: ((g: Types.Game) => void) = (g) => {
-//   g.mode = 'config';
-//   render(g);
-// };
+const title: (g:Types.Game) => React.ReactElement<any> = g => <h1>Human vs {g.enemy === 'sparki' ? 'Sparki' : 'human'}!</h1>;
 
-// const play: ((g: Types.Game) => void) = (g) => {
-//   g.mode = 'config';
-//   render(g);
-// };
+const settings: (g:Types.Game) => React.ReactElement<any> = g => 
+<Settings
+  switchToConfig={config(g)}
+  switchToPlay={play(g)}
+  toggleEnemy={toggleEnemy(g)}
+  reset={reset}
+  mode={g.mode}
+  enemy={g.enemy} 
+/>;
 
-const Battlefield: (s:Types.Game) => React.ReactElement<any> = s => <Battleships clickSea={clickMySea} mySea={s.mode} state={s} />;
-const TestEl: (s:Types.Game) => React.ReactElement<any> = s => <h1>{s.enemySea[0][0]}</h1>;
+const mySea: (g:Types.Game) => React.ReactElement<any> = g => 
+<MySea 
+  clickMySea={clickMySea(g)}
+  mySea={g.mySea}
+/>;
 
-const render = (state: any) => {
+const enemySea: (g:Types.Game) => React.ReactElement<any> = g => 
+<EnemySea 
+  clickEnemySea={clickEnemySea(g)}
+  enemySea={g.enemySea}
+/>;
+
+const footer: (g:Types.Game) => React.ReactElement<any> = g => <Footer />;
+
+const render = (game: Types.Game) => {
   ReactDOM.render(
-    Comp(Battlefield).concat(Comp(TestEl)).fold(state),
+    Comp(title).concat(Comp(settings)).concat(Comp(mySea)).concat(Comp(enemySea)).concat(Comp(footer)).fold(game),
     document.getElementById('root') as HTMLElement
   );
 }
-render(init(10, 10));
+reset();
 
 registerServiceWorker();

@@ -22,4 +22,5 @@ export type Game = {
   myHit?: Point;
   enemyHit?: Point;
   mode: 'config'|'play';
+  enemy: 'sparki'|'human';
 }

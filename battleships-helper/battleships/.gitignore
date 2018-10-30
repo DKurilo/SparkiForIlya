@@ -7,7 +7,8 @@
 /coverage
 
 # production
-/build
+# I want have build in git to be able to open project from github.
+# /build
 
 # misc
 .DS_Store

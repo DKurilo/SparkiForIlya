@@ -1,9 +1,9 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import Battleships from './Battleships';
+import { EnemySea } from './EnemySea';
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
-  ReactDOM.render(<Battleships />, div);
+  ReactDOM.render(<EnemySea />, div);
   ReactDOM.unmountComponentAtNode(div);
 });
