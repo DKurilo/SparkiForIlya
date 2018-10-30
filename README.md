@@ -27,3 +27,7 @@ submarine /single-decker /single-funnel  1       4
 To enter your move push 0-9 for A-J and then 0-9 for 1-10.
 Don't forget to draw your battleships first. Sparki will do it too.  
 
+### Battleship helper
+Will be ready soon.  
+Available here:  
+https://dkurilo.github.io/SparkiForIlya/battleships-helper/battleships/build/  
