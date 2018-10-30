@@ -1,4 +1,5 @@
 .MySea {
-  background: red;
-  color: white;
+  display: inline-block;
+  margin: 20px;
+  border: 1px solid black;
 }

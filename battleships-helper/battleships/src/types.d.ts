@@ -24,4 +24,6 @@ export type Game = {
   enemyHit?: Point;
   mode: 'config'|'play';
   enemy: 'sparki'|'human';
+  currentBoard?: 'my'|'enemy';
+  currentPos?: Point;
 }

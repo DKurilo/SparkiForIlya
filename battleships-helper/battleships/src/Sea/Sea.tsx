@@ -5,9 +5,21 @@ import { Comp } from '../Utils';
 
 import './Sea.css';
 
+import './empty.png';
+import './hit.png';
+import './miss.png';
+import './ship.png';
+
 const SeaLine = (props: any) => {
   const cell: (i: number) => Types.Box = i => Comp(g =>
-    <div className="Cell" onClick={g.click(i)}>{g.line[i]}</div>
+    <div 
+      className={'Cell ' + g.line[i] + 
+                 (g.selectedPos === i || g.selected ? ' light' : '') +
+                 (g.selectedPos === i && g.selected ? ' current' : '') }
+      onClick={g.click(i)}
+      onMouseEnter={g.enter(i)}
+      onMouseLeave={g.leave(i)}
+    />
   );
   const seaLine: (s: Types.SeaLine) => Types.Box = 
     s => s.reduce((acc, i, y) => acc.concat(cell(y)), Comp(g => <React.Fragment />));
@@ -17,16 +29,17 @@ const SeaLine = (props: any) => {
 
 export const Sea = (props:any) => {
   const sea: (s: Types.Sea) => Types.Box = s => s.reduce((acc, i, x) => acc.concat(Comp(g =>
-    <div className="SeaLine">
-      <SeaLine click={g.click(x)} line={g.sea[x]} />
-    </div>
+    <div className="SeaLine"><SeaLine 
+      click={g.click(x)}
+      enter={g.enter(x)}
+      leave={g.leave(x)}
+      line={g.sea[x]}
+      selected={g.selected && g.selectedPos && g.selectedPos.x === x}
+      selectedPos={g.selected && g.selectedPos ? g.selectedPos.y : undefined}
+    /></div>
   )), Comp(g => <React.Fragment />));
 
   return (
-    <div className="Sea">
-      {sea(props.sea).fold(props)}
-    </div>
+    <div className="Sea">{sea(props.sea).fold(props)}</div>
   );
 };
-
-

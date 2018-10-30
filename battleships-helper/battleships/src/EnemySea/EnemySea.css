@@ -1,4 +1,5 @@
 .EnemySea {
-  background: blue;
-  color: yellow;
+  display: inline-block;
+  margin: 20px;
+  border: 1px solid red;
 }

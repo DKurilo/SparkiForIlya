@@ -11,6 +11,31 @@ import { Comp } from './Utils';
 import './index.css';
 import registerServiceWorker from './registerServiceWorker';
 
+const cellStateCycles: any = {
+  my: {
+    config: {
+      empty: 'ship',
+      ship: 'empty',
+    },
+    play: {
+      empty: 'miss',
+      miss: 'empty',
+      ship: 'hit',
+      hit: 'ship',
+    },
+  },
+  enemy: {
+    config: {
+      empty: 'empty',
+    },
+    play: {
+      empty: 'miss',
+      miss: 'hit',
+      hit: 'empty',
+    },
+  },
+};
+
 const initSea: (x: number, y: number) => Types.Sea = (x, y) => Array(y).fill(0).map(_ => Array(x).fill('empty'));
 
 const init: (x: number, y: number) => Types.Game = (x, y) => ({
@@ -21,13 +46,12 @@ const init: (x: number, y: number) => Types.Game = (x, y) => ({
 });
 
 const clickMySea: (g:Types.Game) => (x: number, y: number) => void = g => (x, y) => {
-  g.mySea[x][y] = 'ship';
+  g.mySea[x][y] = cellStateCycles.my[g.mode][g.mySea[x][y]] ? cellStateCycles.my[g.mode][g.mySea[x][y]] : 'empty';
   render(g);
 };
 
-const clickEnemySea: (g:Types.Game) => (x: number, y: number, g: Types.Game) => void = g => (x, y) => {
-  console.log(x, y);
-  g.enemySea[x][y] = 'hit';
+const clickEnemySea: (g:Types.Game) => (x: number, y: number) => void = g => (x, y) => {
+  g.enemySea[x][y] = cellStateCycles.enemy[g.mode][g.enemySea[x][y]] ? cellStateCycles.enemy[g.mode][g.enemySea[x][y]] : 'empty';
   render(g);
 };
 
@@ -50,6 +74,18 @@ const reset: () => void = () => {
   render(init(10, 10));
 };
 
+const mouseEnter: (g: Types.Game) => (board: 'my'|'enemy') => (x: number, y: number) => void = g => board => (x, y) => {
+  g.currentBoard = board;
+  g.currentPos = {x, y};
+  render(g);
+};
+
+const mouseLeave: (g: Types.Game) => (board: 'my'|'enemy') => (x: number, y: number) => void = g => board => (x, y) => {
+  delete(g.currentBoard);
+  delete(g.currentPos);
+  render(g);
+};
+
 const title: (g:Types.Game) => React.ReactElement<any> = g => <h1>Human vs {g.enemy === 'sparki' ? 'Sparki' : 'human'}!</h1>;
 
 const settings: (g:Types.Game) => React.ReactElement<any> = g => 
@@ -66,12 +102,20 @@ const mySea: (g:Types.Game) => React.ReactElement<any> = g =>
 <MySea 
   clickMySea={clickMySea(g)}
   mySea={g.mySea}
+  mouseEnter={mouseEnter(g)('my')}
+  mouseLeave={mouseLeave(g)('my')}
+  selected={g.currentBoard && g.currentBoard === 'my'}
+  selectedPos={g.currentPos}
 />;
 
 const enemySea: (g:Types.Game) => React.ReactElement<any> = g => 
 <EnemySea 
   clickEnemySea={clickEnemySea(g)}
   enemySea={g.enemySea}
+  mouseEnter={mouseEnter(g)('enemy')}
+  mouseLeave={mouseLeave(g)('enemy')}
+  selected={g.currentBoard && g.currentBoard === 'enemy'}
+  selectedPos={g.currentPos}
 />;
 
 const footer: (g:Types.Game) => React.ReactElement<any> = g => <Footer />;

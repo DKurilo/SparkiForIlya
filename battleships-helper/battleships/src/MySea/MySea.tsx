@@ -10,11 +10,23 @@ import './MySea.css';
 export const MySea = (props:any) => {
   const clickHandler: (x: number) => (y: number) => (e:React.MouseEvent<HTMLImageElement>) => void = 
     x => y => e => props.clickMySea(x, y);
-  const sea: (s: Types.Sea) => React.ReactElement<any> = s => <Sea click={clickHandler} sea={s} />;
+  const mouseEnterHandler: (x: number) => (y: number) => (e:React.MouseEvent<HTMLImageElement>) => void = 
+    x => y => e => props.mouseEnter(x, y);
+  const mouseLeaveHandler: (x: number) => (y: number) => (e:React.MouseEvent<HTMLImageElement>) => void = 
+    x => y => e => props.mouseLeave(x, y);
+  const sea: (s: Types.Props) => React.ReactElement<any> = s => 
+    <Sea 
+      click={clickHandler}
+      enter={mouseEnterHandler}
+      leave={mouseLeaveHandler}
+      sea={s.mySea}
+      selected={s.selected}
+      selectedPos={s.selectedPos}
+    />;
 
   return (
     <div className="MySea">
-      {Comp(sea).fold(props.mySea)}
+      {Comp(sea).fold(props)}
     </div>
   );
 };
