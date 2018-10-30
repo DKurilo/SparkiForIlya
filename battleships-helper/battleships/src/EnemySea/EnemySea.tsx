@@ -7,25 +7,25 @@ import { Comp } from '../Utils';
 
 import './EnemySea.css';
 
-export const EnemySea = (props:any) => {
-  const clickHandler: (x: number) => (y: number) => (e:React.MouseEvent<HTMLImageElement>) => void = 
-    x => y => e => props.clickEnemySea(x, y);
-  const mouseEnterHandler: (x: number) => (y: number) => (e:React.MouseEvent<HTMLImageElement>) => void = 
-    x => y => e => props.mouseEnter(x, y);
-  const mouseLeaveHandler: (x: number) => (y: number) => (e:React.MouseEvent<HTMLImageElement>) => void = 
-    x => y => e => props.mouseLeave(x, y);
-  const sea: (s: Types.Props) => React.ReactElement<any> = s => <Sea
-      click={clickHandler}
-      enter={mouseEnterHandler}
-      leave={mouseLeaveHandler}
-      sea={s.enemySea}
-      selected={s.selected}
-      selectedPos={s.selectedPos}
-    />;
 
-  return (
-    <div className="EnemySea">
-      {Comp(sea).fold(props)}
-    </div>
-  );
-};
+const clickHandler: (func: (x: number, y: number) => void) => (x: number) => (y: number) => (e:React.MouseEvent<HTMLImageElement>) => void = 
+  func => x => y => e => func(x, y);
+const mouseEnterHandler: (func: (x: number, y: number) => void) => (x: number) => (y: number) => (e:React.MouseEvent<HTMLImageElement>) => void = 
+  func => x => y => e => func(x, y);
+const mouseLeaveHandler: (func: (x: number, y: number) => void) => (x: number) => (y: number) => (e:React.MouseEvent<HTMLImageElement>) => void = 
+  func => x => y => e => func(x, y);
+const sea: (s: Types.Props) => React.ReactElement<any> = s => 
+  <Sea
+    click={clickHandler(s.clickEnemySea)}
+    enter={mouseEnterHandler(s.mouseEnter)}
+    leave={mouseLeaveHandler(s.mouseLeave)}
+    sea={s.enemySea}
+    selected={s.selected}
+    selectedPos={s.selectedPos}
+    enemy={s.enemy}
+  />;
+
+export const EnemySea = (props:any) => 
+  <div className="EnemySea"><h3>Enemy sea</h3>
+    {Comp(sea).fold(props)}
+  </div>

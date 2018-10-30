@@ -2,19 +2,12 @@ import * as React from 'react';
 
 import './Settings.css';
 
-export const Settings = (props:any) => {
-  const configClickHandler: (e:React.MouseEvent<HTMLImageElement>) => void = e => props.switchToConfig();
-  const playClickHandler: (e:React.MouseEvent<HTMLImageElement>) => void = e => props.switchToPlay();
-  const resetClickHandler: (e:React.MouseEvent<HTMLImageElement>) => void = e => props.reset();
-  const enemyClickHandler: (e:React.MouseEvent<HTMLImageElement>) => void = e => props.toggleEnemy();
+const handler: (func: () => void) => (e:React.MouseEvent<HTMLImageElement>) => void = func => e => func();
 
-  return (
-    <div className="Settings">
-      <h2>Current mode: {props.mode}, current enemy: {props.enemy}</h2>
-      <div onClick={configClickHandler}>Config</div>
-      <div onClick={playClickHandler}>Play</div>
-      <div onClick={resetClickHandler}>Reset</div>
-      <div onClick={enemyClickHandler}>Toggle Enemy</div>
-    </div>
-  );
-};
+export const Settings = (props:any) => 
+  <div className="Settings">
+    <div onClick={handler(props.switchToConfig)} className={props.mode === 'config' ? 'selected' : ''}>Config</div>
+    <div onClick={handler(props.switchToPlay)} className={props.mode === 'play' ? 'selected' : ''}>Play</div>
+    <div onClick={handler(props.reset)}>Reset</div>
+    <div onClick={handler(props.toggleEnemy)}>Toggle Enemy</div>
+  </div>

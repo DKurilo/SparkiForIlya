@@ -10,36 +10,37 @@ import './hit.png';
 import './miss.png';
 import './ship.png';
 
-const SeaLine = (props: any) => {
-  const cell: (i: number) => Types.Box = i => Comp(g =>
-    <div 
-      className={'Cell ' + g.line[i] + 
-                 (g.selectedPos === i || g.selected ? ' light' : '') +
-                 (g.selectedPos === i && g.selected ? ' current' : '') }
-      onClick={g.click(i)}
-      onMouseEnter={g.enter(i)}
-      onMouseLeave={g.leave(i)}
-    />
-  );
-  const seaLine: (s: Types.SeaLine) => Types.Box = 
-    s => s.reduce((acc, i, y) => acc.concat(cell(y)), Comp(g => <React.Fragment />));
+const cell: (i: number) => Types.Box = i => Comp(g =>
+  <div 
+    className={'Cell ' + g.line[i] + 
+               (g.selectedPos === i || g.selected ? ' light' : '') +
+               (g.selectedPos === i && g.selected ? ' current' : '') }
+    onClick={g.click(i)}
+    onMouseEnter={g.enter(i)}
+    onMouseLeave={g.leave(i)}
+  />
+);
+const seaLine: (s: Types.SeaLine) => Types.Box = 
+  s => s.reduce((acc, i, y) => acc.concat(cell(y)), Comp(g => <React.Fragment />));
+const SeaLine = (props: any) => seaLine(props.line).fold(props);
 
-  return seaLine(props.line).fold(props);
-}
-
-export const Sea = (props:any) => {
-  const sea: (s: Types.Sea) => Types.Box = s => s.reduce((acc, i, x) => acc.concat(Comp(g =>
-    <div className="SeaLine"><SeaLine 
-      click={g.click(x)}
-      enter={g.enter(x)}
-      leave={g.leave(x)}
-      line={g.sea[x]}
-      selected={g.selected && g.selectedPos && g.selectedPos.x === x}
-      selectedPos={g.selected && g.selectedPos ? g.selectedPos.y : undefined}
-    /></div>
+const topLabels: (s: Types.SeaLine) => Types.Box = s => s.reduce((acc, i, x) => acc.concat(Comp(g =>
+    <div className="Label">{g.enemy === 'sparki' ? x : (x + 1)}</div>
   )), Comp(g => <React.Fragment />));
 
-  return (
-    <div className="Sea">{sea(props.sea).fold(props)}</div>
-  );
-};
+const topLine: (s: Types.SeaLine) => Types.Box = s => Comp(g => 
+  <div className="SeaLine"><div className="Label" />{topLabels(s).fold(g)}</div>);
+
+const sea: (s: Types.Sea) => Types.Box = s => s.reduce((acc, i, x) => acc.concat(Comp(g =>
+    <div className="SeaLine"><div className="Label">{g.enemy === 'sparki' ? x : String.fromCharCode(65 + x)}</div><SeaLine 
+        click={g.click(x)}
+        enter={g.enter(x)}
+        leave={g.leave(x)}
+        line={g.sea[x]}
+        selected={g.selected && g.selectedPos && g.selectedPos.x === x}
+        selectedPos={g.selected && g.selectedPos ? g.selectedPos.y : undefined}
+        enemy={g.enemy}
+      /></div>
+  )), Comp(g => <React.Fragment />));
+
+export const Sea = (props:any) => <div className="Sea">{topLine(props.sea[0]).concat(sea(props.sea)).fold(props)}</div>;

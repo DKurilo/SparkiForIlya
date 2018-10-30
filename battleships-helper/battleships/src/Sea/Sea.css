@@ -3,6 +3,7 @@
 }
 .SeaLine{
   display: inline-block;
+  vertical-align: top;
 }
 .Cell{
   width: 20px;
@@ -25,4 +26,11 @@
 }
 .Cell:hover, .Cell.current {
   background-color: rgba(255, 255, 0, .6);
+}
+.Label{
+  display: block;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  font: bold 14px/20px sans-serif;
 }
