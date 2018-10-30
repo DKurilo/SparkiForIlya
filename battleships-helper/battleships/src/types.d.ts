@@ -15,7 +15,8 @@ export type Point = {
   y: number;
 };
 export type CState = 'empty'|'miss'|'hit'|'ship';
-export type Sea = Array<Array<CState>>;
+export type SeaLine = Array<CState>;
+export type Sea = Array<SeaLine>;
 export type Game = {
   mySea: Sea;
   enemySea: Sea;

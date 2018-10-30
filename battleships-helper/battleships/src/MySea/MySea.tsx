@@ -1,18 +1,20 @@
 import * as React from 'react';
 
+import * as Types from '../types';
+
+import { Sea } from '../Sea';
+import { Comp } from '../Utils';
+
 import './MySea.css';
 
 export const MySea = (props:any) => {
-  const parseIntSafe: (x:any) => number = x => parseInt('' + x, 10) || 0;
-  const clickHandler: ((e:React.MouseEvent<HTMLImageElement>) => void ) = 
-    e => props.clickMySea(
-      parseIntSafe(e.currentTarget.dataset.x), 
-      parseIntSafe(e.currentTarget.dataset.y)
-    );
+  const clickHandler: (x: number) => (y: number) => (e:React.MouseEvent<HTMLImageElement>) => void = 
+    x => y => e => props.clickMySea(x, y);
+  const sea: (s: Types.Sea) => React.ReactElement<any> = s => <Sea click={clickHandler} sea={s} />;
 
   return (
     <div className="MySea">
-      <div onClick={clickHandler} data-x={4} data-y={4}>{props.mySea[4][4]}</div>
+      {Comp(sea).fold(props.mySea)}
     </div>
   );
 };

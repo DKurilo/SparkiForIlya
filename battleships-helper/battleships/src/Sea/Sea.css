@@ -1,0 +1,10 @@
+.Sea{
+  
+}
+.SeaLine{
+  display: inline-block;
+}
+.Cell{
+  width: 80px;
+  height: 20px;
+}

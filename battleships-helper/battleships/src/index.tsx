@@ -6,24 +6,12 @@ import { EnemySea } from './EnemySea';
 import { Footer } from './Footer';
 import { MySea } from './MySea';
 import { Settings } from './Settings';
+import { Comp } from './Utils';
 
 import './index.css';
 import registerServiceWorker from './registerServiceWorker';
 
-const Comp: (g:Types.Component) => Types.Box = g => ({
-  concat: (other: Types.Box) =>
-    Comp(x=>(
-      <React.Fragment>
-        {g(x)}
-        {other.fold(x)}
-      </React.Fragment>
-    )),
-  contramap: (f:(p:Types.Props) => Types.Props) => Comp(x => g(f(x))),
-  fold: g,
-  map: (f:(e:Types.Element) => Types.Element) => Comp(x => f(g(x))),
-});
-
-const initSea: (x: number, y: number) => Types.Sea = (x, y) => Array(y).fill(Array(x).fill('empty'));
+const initSea: (x: number, y: number) => Types.Sea = (x, y) => Array(y).fill(0).map(_ => Array(x).fill('empty'));
 
 const init: (x: number, y: number) => Types.Game = (x, y) => ({
   enemy: 'sparki',
@@ -35,6 +23,7 @@ const init: (x: number, y: number) => Types.Game = (x, y) => ({
 const clickMySea: (g:Types.Game) => (x: number, y: number) => void = g => (x, y) => {
   console.log(x, y);
   g.mySea[x][y] = 'ship';
+  console.log(g.mySea);
   render(g);
 };
 
