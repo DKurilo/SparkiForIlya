@@ -21,9 +21,7 @@ const init: (x: number, y: number) => Types.Game = (x, y) => ({
 });
 
 const clickMySea: (g:Types.Game) => (x: number, y: number) => void = g => (x, y) => {
-  console.log(x, y);
   g.mySea[x][y] = 'ship';
-  console.log(g.mySea);
   render(g);
 };
 
