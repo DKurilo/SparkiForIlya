@@ -34,3 +34,21 @@
   text-align: center;
   font: bold 14px/20px sans-serif;
 }
+
+.Label.empty{
+  background: transparent url('./label-empty.png') center center;
+}
+
+.Label.x{
+  background: transparent url('./label-x.png') center center;
+}
+
+.Label.y{
+  background: transparent url('./label-y.png') center center;
+}
+
+.Label.active{
+  color: red;
+  font: bold 16px/20px sans-serif;
+  background-color: rgba(255, 255, 0, .2);
+}

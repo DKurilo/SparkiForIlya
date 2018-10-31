@@ -7,6 +7,9 @@ import './Sea.css';
 
 import './empty.png';
 import './hit.png';
+import './label-empty.png';
+import './label-x.png';
+import './label-y.png';
 import './miss.png';
 import './ship.png';
 
@@ -24,15 +27,15 @@ const seaLine: (s: Types.SeaLine) => Types.Box =
   s => s.reduce((acc, i, y) => acc.concat(cell(y)), Comp(g => <React.Fragment />));
 const SeaLine = (props: any) => seaLine(props.line).fold(props);
 
-const topLabels: (s: Types.SeaLine) => Types.Box = s => s.reduce((acc, i, x) => acc.concat(Comp(g =>
-    <div className="Label">{g.enemy === 'sparki' ? x : (x + 1)}</div>
+const rightLabels: (s: Types.SeaLine) => Types.Box = s => s.reduce((acc, i, y) => acc.concat(Comp(g =>
+    <div className={'Label y' + (g.selected && g.selectedPos && g.selectedPos.y === y ? ' active' : '') }>{g.enemy === 'sparki' ? y : (y + 1)}</div>
   )), Comp(g => <React.Fragment />));
 
-const topLine: (s: Types.SeaLine) => Types.Box = s => Comp(g => 
-  <div className="SeaLine"><div className="Label" />{topLabels(s).fold(g)}</div>);
+const rightLine: (s: Types.SeaLine) => Types.Box = s => Comp(g => 
+  <div className="SeaLine"><div className="Label empty" />{rightLabels(s).fold(g)}</div>);
 
 const sea: (s: Types.Sea) => Types.Box = s => s.reduce((acc, i, x) => acc.concat(Comp(g =>
-    <div className="SeaLine"><div className="Label">{g.enemy === 'sparki' ? x : String.fromCharCode(65 + x)}</div><SeaLine 
+    <div className="SeaLine"><div className={'Label x' + (g.selected && g.selectedPos && g.selectedPos.x === x ? ' active' : '')}>{g.enemy === 'sparki' ? x : String.fromCharCode(65 + x)}</div><SeaLine 
         click={g.click(x)}
         enter={g.enter(x)}
         leave={g.leave(x)}
@@ -43,4 +46,4 @@ const sea: (s: Types.Sea) => Types.Box = s => s.reduce((acc, i, x) => acc.concat
       /></div>
   )), Comp(g => <React.Fragment />));
 
-export const Sea = (props:any) => <div className="Sea">{topLine(props.sea[0]).concat(sea(props.sea)).fold(props)}</div>;
+export const Sea = (props:any) => <div className="Sea">{rightLine(props.sea[0]).concat(sea(props.sea)).fold(props)}</div>;

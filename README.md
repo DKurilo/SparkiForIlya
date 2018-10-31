@@ -28,6 +28,11 @@ To enter your move push 0-9 for A-J and then 0-9 for 1-10.
 Don't forget to draw your battleships first. Sparki will do it too.  
 
 ### Battleship helper
-Will be ready soon.  
 Available here:  
 https://dkurilo.github.io/SparkiForIlya/battleships-helper/battleships/build/  
+Helper is pure functional React + TypeScript.  
+Additional resources:  
+https://github.com/facebookincubator/create-react-app  
+https://hackernoon.com/resisting-higher-order-and-accepting-functional-c258f5acd6ff?gi=cc6721a4b6af  
+https://www.youtube.com/watch?v=SfWR3dKnFIo  
+If you are author of one of thing above: Thank you!  
