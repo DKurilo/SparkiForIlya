@@ -4,7 +4,7 @@ import './Footer.css';
 
 export const Footer = (props:any) => 
   <div className="Footer">
-    This page was created as a helper for Battleship game for Sparki (http://arcbotics.com/products/sparki/). Source for game is here: https://github.com/DKurilo/SparkiForIlya/tree/master/battleships<br/>
+    This page was created as a helper for Battleship <a href="http://arcbotics.com/products/sparki/" target="_blank">game for Sparki</a>. Source for game is <a href="https://github.com/DKurilo/SparkiForIlya/tree/master/battleships" target="_blank">here</a>.<br/>
     So the default map field namings are 0-9 for x-axis and 0-9 for y-axis. Sparki doesn't have letters on remote.<br/>
     But you can use more typical naming when you are playing with your friends. Just click Toggle Enemy and play in Human vs Human version.<br/>
     It can work in two modes:<br/>
