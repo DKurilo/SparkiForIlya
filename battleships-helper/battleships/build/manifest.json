@@ -1,6 +1,6 @@
 {
-  "short_name": "Battleships",
-  "name": "Battleships helper",
+  "short_name": "Battleship",
+  "name": "Battleship helper",
   "icons": [
     {
       "src": "favicon.ico",
